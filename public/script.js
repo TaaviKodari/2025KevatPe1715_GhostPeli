@@ -1,6 +1,7 @@
 const BOARD_SIZE = 20;
 const cellSize = calculateCellSize();
 let board;
+let player;
 
 document.getElementById('new-game-btn').addEventListener('click', startGame);
 
@@ -8,6 +9,8 @@ function startGame(){
     //console.log('klikattu'); 
     document.getElementById('intro-screen').style.display ='none';
     document.getElementById('game-screen').style.display = 'block';
+
+    player = new Player(0,0);
 
     board = generateRandomBoard();
     drawBoard(board);
@@ -26,6 +29,12 @@ function generateRandomBoard(){
 
     generateObstacles(newBoard);
 
+    const [playerX, playerY] = randomEmptyPosition(newBoard);
+    setCell(newBoard, playerX, playerY, 'P');
+
+    player.x = playerX;
+    player.y = playerY;
+
     console.log(newBoard);
     return newBoard;
 }
@@ -41,6 +50,8 @@ function drawBoard(board){
             cell.style.height = cellSize + 'px';
             if(getCell(board,x,y)=== 'W'){
                 cell.classList.add('wall');
+            }else if(getCell(board,x,y) === 'P'){
+                cell.classList.add('player');
             }
 
             gameBoard.appendChild(cell);
@@ -64,6 +75,7 @@ function generateObstacles(board){
         [[0,0],[0,1],[0,2],[0,3]],//I
         [[0,0],[1,0],[2,0],[1,1]], //T
         [[1,0],[2,0],[1,1],[0,2],[1,2]], //Z
+        [[1,0],[2,0],[0,1],[1,1]],//S
     ]
 
     const positions = [
@@ -72,7 +84,8 @@ function generateObstacles(board){
         {startX: 4, startY: 8},
         {startX: 3, startY: 16},
         {startX: 10, startY: 10},
-        {startX: 12, startY:10},
+        {startX: 12, startY: 10},
+        {startX: 16, startY: 10},
     ]
 
     positions.forEach(pos=>{
@@ -85,5 +98,30 @@ function placeObstacle(board, obstacle, startX, startY){
     for(coordinatePair of obstacle){
         [x,y] = coordinatePair;
         board[startY + y][startX + x] ='W';
+    }
+}
+
+function randomInt(min,max){
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomEmptyPosition(board){
+    x = randomInt(1,BOARD_SIZE - 2);
+    y = randomInt(1, BOARD_SIZE -2);
+    if(getCell(board,x,y) === ''){
+        return [x,y];
+    }else{
+        return randomEmptyPosition(board);
+    }
+}
+
+function setCell(board, x, y, value){
+    board[y][x] = value;
+}
+
+class Player{
+    constructor(x,y){
+        this.x = x;
+        this.y = y;
     }
 }
