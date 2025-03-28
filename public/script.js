@@ -2,6 +2,7 @@ const BOARD_SIZE = 20;
 const cellSize = calculateCellSize();
 let board;
 let player;
+let ghosts = [];
 
 document.getElementById('new-game-btn').addEventListener('click', startGame);
 
@@ -22,6 +23,22 @@ document.addEventListener('keydown',(event)=>{
         case 'ArrowRight':
             player.move(1,0);
         break
+
+        case 'w':
+            shootAt(player.x,player.y -1);
+        break;
+
+        case 's':
+            shootAt(player.x, player.y +1);
+        break;
+
+        case 'a':
+            shootAt(player.x -1, player.y);
+        break;
+
+        case 'd':
+            shootAt(player.x + 1, player.y);
+        break;
     }
     event.preventDefault();
 });
@@ -49,12 +66,19 @@ function generateRandomBoard(){
     }
 
     generateObstacles(newBoard);
-
+    //pelaajan sijainnin laittaminen
     const [playerX, playerY] = randomEmptyPosition(newBoard);
     setCell(newBoard, playerX, playerY, 'P');
 
     player.x = playerX;
     player.y = playerY;
+
+    //Kummitusten luonti
+    for(let i = 0; i < 5; i++){
+        const[ghostX, ghostY] = randomEmptyPosition(newBoard);
+        setCell(newBoard,ghostX, ghostY,'G');
+        ghosts.push(new Ghost(ghostX, ghostY));
+    }
 
     console.log(newBoard);
     return newBoard;
@@ -76,6 +100,10 @@ function drawBoard(board){
                 cell.classList.add('wall');
             }else if(getCell(board,x,y) === 'P'){
                 cell.classList.add('player');
+            }else if(getCell(board,x,y) === 'G'){
+                cell.classList.add('ghost');
+            }else if(getCell(board,x,y) === 'B'){
+                cell.classList.add('bullet');
             }
 
             gameBoard.appendChild(cell);
@@ -143,6 +171,11 @@ function setCell(board, x, y, value){
     board[y][x] = value;
 }
 
+function shootAt(x,y){
+    setCell(board,x,y,'B');
+    drawBoard(board);
+}
+
 class Player{
     constructor(x,y){
         this.x = x;
@@ -168,7 +201,13 @@ class Player{
         //päivitetään pelilauta
         drawBoard(board);
         }
+    }
+}
 
 
+class Ghost{
+    constructor(x,y){
+        this.x = x;
+        this.y = y;
     }
 }
