@@ -3,6 +3,7 @@ const cellSize = calculateCellSize();
 let board;
 let player;
 let ghosts = [];
+let ghostSpeed = 1000;
 
 document.getElementById('new-game-btn').addEventListener('click', startGame);
 
@@ -52,6 +53,7 @@ function startGame(){
 
     board = generateRandomBoard();
     drawBoard(board);
+    setInterval(moveGhosts,ghostSpeed);
 }
 
 function generateRandomBoard(){
@@ -192,6 +194,28 @@ function shootAt(x,y){
     }
 }
 
+function moveGhosts(){
+    const oldGhosts = ghosts.map(ghost =>({x:ghost.x, y: ghost.y}));
+
+    ghosts.forEach(ghost =>{
+      const newPosition = ghost.moveGhostTowardsPlayer(player,board, oldGhosts);
+      ghost.x = newPosition.x;
+      ghost.y = newPosition.y;
+      
+      setCell(board, ghost.x, ghost.y,'G');
+
+      oldGhosts.forEach(ghost =>{
+        setCell(board,ghost.x, ghost.y,'');
+      })
+      
+      ghosts.forEach(ghost =>{
+        setCell(board,ghost.x, ghost.y, 'G');
+      })
+
+      drawBoard(board);
+    });
+}
+
 class Player{
     constructor(x,y){
         this.x = x;
@@ -227,7 +251,7 @@ class Ghost{
         this.y = y;
     }
 
-    moveGhostTowardsPlayer(player, board){
+    moveGhostTowardsPlayer(player, board, oldGhosts){
         
         let dx = player.x - this.x;
         let dy = player.y - this.y;
@@ -238,6 +262,7 @@ class Ghost{
             //Vaakatossa liikkuminen
             if(dx > 0) moves.push({x: this.x + 1, y:this.y}) //liikutaan oikealle
             else moves.push({x:this.x - 1, y: this.y}); // liikutaan vasemmalle
+
             //Pystyssä liikkuminen
             if(dy > 0) moves.push({x: this.x, y: this.y + 1}) // liikutaan alaspäin
             else moves.push({x: this.x, y: this.y - 1}) // liikutaan ylöspäin
@@ -245,9 +270,19 @@ class Ghost{
             //Pystyssä liikkuminen
             if(dy > 0) moves.push({x: this.x, y: this.y + 1}) // liikutaan alaspäin
             else moves.push({x: this.x, y: this.y - 1}) // liikutaan ylöspäin
+
             //Vaakatossa liikkuminen
             if(dx > 0) moves.push({x: this.x + 1, y:this.y}) //liikutaan oikealle
             else moves.push({x:this.x - 1, y: this.y}); // liikutaan vasemmalle
         }
+
+        for(let move of moves){
+            if(getCell(board,move.x, move.y) === '' || getCell(board, move.x, move.y) === 'P' &&
+        !oldGhosts.some(h=>h.x === move.x && h.y === move.y)){
+                return move;
+            }
+        }
+
+        return{x:this.x, y:this.y};
     }
 }
