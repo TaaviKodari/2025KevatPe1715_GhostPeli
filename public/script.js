@@ -4,10 +4,16 @@ let board;
 let player;
 let ghosts = [];
 let ghostSpeed = 1000;
+let isGameRunning = false;
+let ghostInterval;
 
 document.getElementById('new-game-btn').addEventListener('click', startGame);
 
 document.addEventListener('keydown',(event)=>{
+    if(isGameRunning === false){
+        return;
+    }
+
     switch(event.key){
         case 'ArrowUp':
             player.move(0,-1);
@@ -53,7 +59,11 @@ function startGame(){
 
     board = generateRandomBoard();
     drawBoard(board);
-    setInterval(moveGhosts,ghostSpeed);
+    setTimeout(()=>{
+        ghostInterval = setInterval(moveGhosts,ghostSpeed);
+    },1000);
+    
+    isGameRunning = true;
 }
 
 function generateRandomBoard(){
@@ -76,6 +86,7 @@ function generateRandomBoard(){
     player.y = playerY;
 
     //Kummitusten luonti
+    ghosts = [];
     for(let i = 0; i < 5; i++){
         const[ghostX, ghostY] = randomEmptyPosition(newBoard);
         setCell(newBoard,ghostX, ghostY,'G');
@@ -202,7 +213,7 @@ function moveGhosts(){
       ghost.x = newPosition.x;
       ghost.y = newPosition.y;
       
-      setCell(board, ghost.x, ghost.y,'G');
+      setCell(board, ghost.x, ghost.y,'G'); 
 
       oldGhosts.forEach(ghost =>{
         setCell(board,ghost.x, ghost.y,'');
@@ -213,7 +224,21 @@ function moveGhosts(){
       })
 
       drawBoard(board);
+
+      if(ghost.x === player.x && ghost.y === player.y){
+        endGame();
+        return;
+      }
+
     });
+}
+
+function endGame(){
+    alert('Game Over! The ghost caught you!');
+    document.getElementById('intro-screen').style.display = 'block';
+    document.getElementById('game-screen').style.display = 'none';
+    clearInterval(ghostInterval);
+    isGameRunning = false;
 }
 
 class Player{
