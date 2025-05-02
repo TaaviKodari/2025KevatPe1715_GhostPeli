@@ -6,6 +6,7 @@ let ghosts = [];
 let ghostSpeed = 1000;
 let isGameRunning = false;
 let ghostInterval;
+let score = 0;
 
 document.getElementById('new-game-btn').addEventListener('click', startGame);
 
@@ -62,7 +63,7 @@ function startGame(){
     setTimeout(()=>{
         ghostInterval = setInterval(moveGhosts,ghostSpeed);
     },1000);
-    
+    updateScoreBoard(0);
     isGameRunning = true;
 }
 
@@ -196,6 +197,7 @@ function shootAt(x,y){
     const ghostIndex = ghosts.findIndex(ghost => ghost.x === x && ghost.y === y);
     if(ghostIndex !== -1){
         ghosts.splice(ghostIndex,1);
+        updateScoreBoard(50);
     }
     setCell(board,x,y,'B');
     drawBoard(board);
@@ -239,6 +241,12 @@ function endGame(){
     document.getElementById('game-screen').style.display = 'none';
     clearInterval(ghostInterval);
     isGameRunning = false;
+}
+
+function updateScoreBoard(points){
+    const scoreBoard = document.getElementById('score-board');
+    score += points;
+    scoreBoard.textContent = `Pisteet: ${score}`;
 }
 
 class Player{

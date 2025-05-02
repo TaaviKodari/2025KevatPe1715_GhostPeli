@@ -115,4 +115,7 @@ button{
     font-weight: bold;
     margin: 10px;
     color: #fff;
+    position: absolute;
+    top: 10px;
+    left: 10px;
 }
