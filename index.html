@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>kummituspeli</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
     <script src="script.js" defer></script>
 </head>
 
@@ -31,6 +33,14 @@
     </div>
 
     <div id="score-board"></div>
+
+    <div id="game-over-screen" >
+        <h1>Game Over!</h1>
+        <p>Haluatko tallentaa pisteesi?</p>
+        <input type="text" id="player-name" placeholder="Nimesi">
+        <button id="save-scores-btn">Kyllä</button>
+        <button id="exit-btn">Ei</button>
+    </div>
 
 </body>
 </html>

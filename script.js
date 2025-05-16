@@ -1,3 +1,22 @@
+const firebaseConfig = {
+
+    apiKey: "AIzaSyCmrKJzuZ2Nbe8wCGY4Do6Nbu69vMXR6so",
+
+    authDomain: "kevatpe1715-haamupeli.firebaseapp.com",
+
+    projectId: "kevatpe1715-haamupeli",
+
+    storageBucket: "kevatpe1715-haamupeli.firebasestorage.app",
+
+    messagingSenderId: "656257362151",
+
+    appId: "1:656257362151:web:1fe3ca51b722fd83fbda42"
+
+  };
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 const BOARD_SIZE = 20;
 const cellSize = calculateCellSize();
 let board;
@@ -8,7 +27,11 @@ let isGameRunning = false;
 let ghostInterval;
 let score = 0;
 let ghostAmount = 1;
+
 document.getElementById('new-game-btn').addEventListener('click', startGame);
+document.getElementById('save-scores-btn').addEventListener('click', saveScore);
+document.getElementById('exit-btn').addEventListener('click', exitGame);
+
 
 document.addEventListener('keydown',(event)=>{
     if(isGameRunning === false){
@@ -238,10 +261,11 @@ function moveGhosts(){
 
 function endGame(){
     alert('Game Over! The ghost caught you!');
-    document.getElementById('intro-screen').style.display = 'block';
-    document.getElementById('game-screen').style.display = 'none';
+    // document.getElementById('intro-screen').style.display = 'block';
+    // document.getElementById('game-screen').style.display = 'none';
     clearInterval(ghostInterval);
     isGameRunning = false;
+    document.getElementById('game-over-screen').style.display = 'block';
 }
 
 function updateScoreBoard(points){
@@ -259,6 +283,29 @@ function startNextLevel(){
     setTimeout(()=>{
         ghostInterval =  setInterval(moveGhosts,ghostSpeed);
     },1000); 
+}
+
+function saveScore()
+{
+    const playerName = document.getElementById('player-name').value;
+    if(playerName.trim() === ''){
+        alert('Please enter your name');
+        return;
+    }
+
+    db.collection("scores").add({
+        name:playerName,
+        score: score,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    exitGame();
+}
+
+function exitGame(){
+    document.getElementById('intro-screen').style.display = 'block';
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('game-over-screen').style.display = 'none';
 }
 
 class Player{

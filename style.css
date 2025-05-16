@@ -119,3 +119,13 @@ button{
     top: 10px;
     left: 10px;
 }
+#game-over-screen{
+    display: none;
+    background-color: rgba(241,234,234,0.8);   
+    color: black;
+    padding: 20px;
+    text-align: center;
+    position: absolute;
+    top:50%;
+    left: 50%;
+}
